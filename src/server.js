@@ -11,6 +11,9 @@ import { promisify } from 'util';
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import dotenv from 'dotenv';  // ADD THIS
+
+dotenv.config();  // ADD THIS
 
 const parseXml = promisify(parseString);
 const __filename = fileURLToPath(import.meta.url);
@@ -32,8 +35,6 @@ docFiles.forEach(file => {
   }
 });
 
-import dotenv from 'dotenv';
-dotenv.config();
 
 class MarketingCloudMCPServer {
   constructor() {
