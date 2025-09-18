@@ -1,0 +1,71 @@
+# fly.toml for salesforce-mce-mcp-server-api
+app = "salesforce-mce-api"
+primary_region = "iad"  # US East - change to your preferred region
+
+[build]
+  builder = "heroku/builder:22"
+
+[env]
+  PORT = "8080"
+  NODE_ENV = "production"
+  REQUIRE_AUTH = "true"
+  LOG_LEVEL = "info"
+  
+  # Rate limiting
+  RATE_LIMIT_WINDOW_MS = "60000"
+  RATE_LIMIT_MAX_REQUESTS = "100"
+  
+  # These will be set via fly secrets:
+  # MCE_SUBDOMAIN
+  # MCE_CLIENT_ID
+  # MCE_CLIENT_SECRET
+  # MCE_DEFAULT_MID
+  # API_KEY
+  # ALLOWED_ORIGINS
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0  # Set to 1 for production
+  processes = ["app"]
+
+  [http_service.concurrency]
+    type = "requests"
+    hard_limit = 250
+    soft_limit = 200
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 8080
+  processes = ["app"]
+
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+    
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+
+  [[services.tcp_checks]]
+    interval = "15s"
+    timeout = "2s"
+    grace_period = "5s"
+    restart_limit = 6
+
+  [[services.http_checks]]
+    interval = "30s"
+    grace_period = "10s"
+    method = "get"
+    path = "/health"
+    protocol = "http"
+    restart_limit = 0
+    timeout = "2s"
+    tls_skip_verify = false
+    [services.http_checks.headers]
+
+[metrics]
+  port = 9091
+  path = "/metrics"
