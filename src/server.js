@@ -26,13 +26,13 @@ const docFiles = ['mcp-documentation.json', 'journey-builder-examples.json', 'so
 
 docFiles.forEach(file => {
   try {
-    const filePath = join(__dirname, '..', 'docs', file); // This line should be INSIDE the forEach
+    const filePath = join(__dirname, '..', 'docs', file);
     const content = JSON.parse(readFileSync(filePath, 'utf8'));
     const key = file.replace('.json', '').replace(/-/g, '_');
     documentation[key] = content;
-    console.log(`✓ Loaded ${file}`);
+    console.error(`✓ Loaded ${file}`);  // Use console.error for stdio mode
   } catch (error) {
-    console.log(`✗ Could not load ${file}:`, error.message);
+    console.error(`✗ Could not load ${file}:`, error.message);  // Use console.error
   }
 });
 
