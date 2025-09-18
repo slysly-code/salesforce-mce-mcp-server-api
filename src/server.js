@@ -3,6 +3,7 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import express from 'express';
 import cors from 'cors';
 import axios from 'axios';
@@ -587,6 +588,29 @@ class MarketingCloudMCPServer {
   }
 }
 
-// Start the server
-const server = new MarketingCloudMCPServer();
-server.start();
+// Start the server in appropriate mode
+async function main() {
+  const server = new MarketingCloudMCPServer();
+  
+  if (process.argv.includes('--stdio')) {
+    // Stdio mode for Claude Desktop
+    try {
+      const { StdioServerTransport } = await import('@modelcontextprotocol/sdk/server/stdio.js');
+      const transport = new StdioServerTransport();
+      await server.mcpServer.connect(transport);
+      console.error('MCP Server running in stdio mode for Claude Desktop');
+    } catch (error) {
+      console.error('Failed to start in stdio mode:', error);
+      process.exit(1);
+    }
+  } else {
+    // HTTP mode for remote access
+    server.start();
+  }
+}
+
+// Run the main function
+main().catch((error) => {
+  console.error('Fatal error:', error);
+  process.exit(1);
+});
