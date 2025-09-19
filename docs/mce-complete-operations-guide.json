@@ -1,0 +1,595 @@
+{
+  "mce_operations_guide": {
+    "metadata": {
+      "version": "1.0.0",
+      "last_updated": "2024-09-19",
+      "description": "Complete MCE operations guide consolidating all helpers",
+      "critical_notes": [
+        "For email creation, ALWAYS use REST API directly via mce_v1_rest_request",
+        "The mce_v1_build_email tool has rendering issues - avoid in production",
+        "Data Extensions MUST be linked to Contact Model for Journey filters to work"
+      ]
+    },
+
+    "email_operations": {
+      "asset_creation": {
+        "description": "Creating email assets/templates via REST API",
+        "method": "REST API",
+        "tool": "mce_v1_rest_request",
+        
+        "working_example": {
+          "method": "POST",
+          "path": "/asset/v1/content/assets",
+          "body": {
+            "name": "Email Asset Name",
+            "assetType": {
+              "id": 208,
+              "name": "htmlemail",
+              "both_required": true
+            },
+            "views": {
+              "html": {
+                "content": "<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><style>body{margin:0;padding:0;font-family:Arial,sans-serif;}.container{max-width:600px;margin:0 auto;}</style></head><body><div class=\"container\"><h1>Welcome</h1><p>Content here</p></div></body></html>"
+              },
+              "subjectline": {
+                "content": "Subject Line"
+              },
+              "preheader": {
+                "content": "Preview text"
+              }
+            }
+          }
+        },
+
+        "asset_types": {
+          "htmlemail": { "id": 208, "name": "htmlemail" },
+          "template": { "id": 207, "name": "template" },
+          "textonlyemail": { "id": 209, "name": "textonlyemail" }
+        },
+
+        "common_errors": {
+          "118077": {
+            "error": "Invalid AssetType",
+            "cause": "Missing assetType.name",
+            "solution": "Include both id AND name in assetType object"
+          },
+          "118081": {
+            "error": "Invalid Category",
+            "solution": "Omit category or use valid ID"
+          }
+        },
+
+        "html_requirements": [
+          "<!DOCTYPE html> declaration",
+          "<meta charset=\"UTF-8\">",
+          "<meta name=\"viewport\"> for mobile",
+          "max-width: 600px container",
+          "Inline CSS for email clients"
+        ],
+
+        "api_endpoints": {
+          "create": "POST /asset/v1/content/assets",
+          "list": "GET /asset/v1/content/assets?$filter=assetType.id eq 208",
+          "get": "GET /asset/v1/content/assets/{id}",
+          "update": "PATCH /asset/v1/content/assets/{id}",
+          "delete": "DELETE /asset/v1/content/assets/{id}"
+        }
+      },
+
+      "email_sending": {
+        "description": "Sending emails via SOAP API",
+        "method": "SOAP API",
+        "tool": "mce_v1_soap_request",
+        
+        "triggered_send": {
+          "action": "Create",
+          "objectType": "TriggeredSend",
+          "objects": [
+            {
+              "TriggeredSendDefinition": {
+                "CustomerKey": "triggered-send-key",
+                "Name": "Welcome Email",
+                "Email": {
+                  "ID": 123456
+                }
+              },
+              "Subscribers": [
+                {
+                  "EmailAddress": "user@example.com",
+                  "SubscriberKey": "subscriber-123"
+                }
+              ]
+            }
+          ]
+        },
+
+        "batch_send": {
+          "action": "Create",
+          "objectType": "Send",
+          "objects": [
+            {
+              "Email": {
+                "ID": 123456
+              },
+              "List": {
+                "ID": 789012
+              }
+            }
+          ]
+        }
+      }
+    },
+
+    "journey_builder": {
+      "overview": {
+        "description": "Journey Builder automation patterns",
+        "critical_requirement": "Data Extensions MUST be linked to Contact Model for filters",
+        "api_base": "/interaction/v1"
+      },
+
+      "journey_structure": {
+        "event_definitions": {
+          "EmailAudience": {
+            "description": "Data Extension based entry",
+            "requirements": "DE must be linked to Contact Model",
+            "schedule_types": ["RunOnce", "Recurring"],
+            "key_settings": {
+              "useHighWatermark": true,
+              "resetHighWatermark": true
+            }
+          }
+        },
+
+        "activities": {
+          "EMAILV2": {
+            "type": "EMAILV2",
+            "description": "Send email activity",
+            "configurationArguments": {
+              "triggeredSend": {
+                "emailId": "number",
+                "isTrackingClicks": true,
+                "isMultipart": true
+              }
+            }
+          },
+
+          "MULTICRITERIADECISION": {
+            "type": "MULTICRITERIADECISION",
+            "description": "Decision split",
+            "filter_format": "<FilterDefinition><ConditionSet Operator=\"AND\"><Condition Key=\"DE.Field\" Operator=\"Equal\"><Value><![CDATA[value]]></Value></Condition></ConditionSet></FilterDefinition>",
+            "operators": ["Equal", "NotEqual", "GreaterThan", "LessThan", "IsNull", "IsNotNull", "Between", "In", "Like"]
+          },
+
+          "WAIT": {
+            "type": "WAIT",
+            "description": "Pause journey",
+            "units": ["HOURS", "DAYS", "WEEKS", "MONTHS"],
+            "example": {
+              "waitDuration": "3",
+              "waitUnit": "DAYS"
+            }
+          },
+
+          "ABNTEST": {
+            "type": "ABNTEST",
+            "description": "Path Optimizer A/B testing",
+            "important": "holdBackPercentage must be 0 for recurring journeys",
+            "metrics": ["Opens", "Clicks", "UnsubscribeRate", "ConversionRate"]
+          },
+
+          "ENGAGEMENTDECISION": {
+            "type": "ENGAGEMENTDECISION",
+            "description": "Email engagement split",
+            "statsTypes": {
+              "1": "Opened",
+              "3": "Clicked",
+              "5": "Bounced",
+              "7": "Unsubscribed"
+            }
+          },
+
+          "STOWAIT": {
+            "type": "STOWAIT",
+            "description": "Einstein Send Time Optimization",
+            "params": {
+              "slidingWindowHours": 24,
+              "enableRandomTime": true
+            }
+          }
+        },
+
+        "entry_modes": {
+          "OnceAndDone": "Contact enters only once ever",
+          "SingleEntryAcrossAllVersions": "Contact can re-enter after exiting",
+          "MultipleEntries": "Contact can be in journey multiple times"
+        }
+      },
+
+      "complete_journey_example": {
+        "name": "Recurring Campaign with Path Optimizer",
+        "description": "Daily recurring with A/B test and engagement decision",
+        "event_definition": {
+          "type": "EmailAudience",
+          "schedule": {
+            "frequency": "Daily",
+            "startDateTime": "2025-01-01T09:00:00"
+          },
+          "filterDefinitionTemplate": "<FilterDefinition><ConditionSet Operator=\"AND\"><Condition Key=\"DE.Status\" Operator=\"Equal\"><Value><![CDATA[Active]]></Value></Condition></ConditionSet></FilterDefinition>",
+          "arguments": {
+            "useHighWatermark": true
+          }
+        },
+        "activities": [
+          {
+            "key": "ABNTEST-1",
+            "type": "ABNTEST",
+            "outcomes": [
+              { "key": "path1", "next": "EMAIL-1", "percentage": 50 },
+              { "key": "path2", "next": "EMAIL-2", "percentage": 50 }
+            ],
+            "configurationArguments": {
+              "holdBackPercentage": 0,
+              "winnerEvaluationType": "Engagement",
+              "engagementWinnerMetric": "Clicks"
+            }
+          }
+        ]
+      },
+
+      "api_endpoints": {
+        "journeys": {
+          "list": "GET /interaction/v1/interactions",
+          "create": "POST /interaction/v1/interactions",
+          "publish": "POST /interaction/v1/interactions/publishAsync/{id}",
+          "stop": "POST /interaction/v1/interactions/stop/{id}"
+        },
+        "events": {
+          "list": "GET /interaction/v1/eventDefinitions",
+          "create": "POST /interaction/v1/eventDefinitions"
+        }
+      }
+    },
+
+    "data_operations": {
+      "data_extensions": {
+        "description": "Managing data extensions via SOAP",
+        "tool": "mce_v1_soap_request",
+        
+        "create_de": {
+          "action": "Create",
+          "objectType": "DataExtension",
+          "objects": [
+            {
+              "name": "Customer_Data",
+              "customerKey": "customer_data",
+              "fields": [
+                {
+                  "name": "EmailAddress",
+                  "fieldType": "EmailAddress",
+                  "maxLength": 254,
+                  "isPrimaryKey": true,
+                  "isRequired": true
+                },
+                {
+                  "name": "FirstName",
+                  "fieldType": "Text",
+                  "maxLength": 100
+                }
+              ],
+              "isSendable": true,
+              "sendableDataExtensionField": "EmailAddress",
+              "sendableSubscriberField": "_SubscriberKey"
+            }
+          ]
+        },
+
+        "field_types": [
+          "Text (max 4000)",
+          "Number",
+          "Decimal (18,5)",
+          "Date",
+          "Boolean",
+          "EmailAddress",
+          "Phone",
+          "Locale"
+        ],
+
+        "retrieve_data": {
+          "action": "Retrieve",
+          "objectType": "DataExtensionObject[DE_Name]",
+          "properties": ["EmailAddress", "FirstName", "LastName"],
+          "filter": {
+            "property": "EmailAddress",
+            "operator": "equals",
+            "value": "user@example.com"
+          }
+        },
+
+        "upsert_rows": {
+          "action": "Update",
+          "objectType": "DataExtensionObject[DE_Name]",
+          "objects": [
+            {
+              "EmailAddress": "user@example.com",
+              "FirstName": "John",
+              "LastName": "Doe"
+            }
+          ]
+        }
+      },
+
+      "import_definitions": {
+        "description": "Automated data imports",
+        "create_import": {
+          "action": "Create",
+          "objectType": "ImportDefinition",
+          "objects": [
+            {
+              "name": "Daily Import",
+              "customerKey": "daily_import",
+              "fileSpec": "data_*.csv",
+              "destinationObject": {
+                "customerKey": "target_de"
+              }
+            }
+          ]
+        }
+      },
+
+      "query_activities": {
+        "description": "SQL query activities",
+        "create_query": {
+          "action": "Create",
+          "objectType": "QueryDefinition",
+          "objects": [
+            {
+              "name": "Segment Query",
+              "customerKey": "segment_query",
+              "queryText": "SELECT EmailAddress, FirstName FROM Customer_Data WHERE Status = 'Active'",
+              "targetName": "Segmented_Customers",
+              "targetUpdateType": "Overwrite"
+            }
+          ]
+        }
+      }
+    },
+
+    "automation_studio": {
+      "automation_types": {
+        "scheduled": "Run on schedule",
+        "triggered": "File drop or API trigger",
+        "journey": "Triggered by Journey Builder"
+      },
+
+      "activities": [
+        "Import File",
+        "Query Activity",
+        "Filter Activity",
+        "Script Activity",
+        "Send Email",
+        "Wait Activity",
+        "Data Extract"
+      ],
+
+      "create_automation": {
+        "action": "Create",
+        "objectType": "Automation",
+        "objects": [
+          {
+            "name": "Daily Processing",
+            "customerKey": "daily_processing",
+            "schedule": {
+              "frequency": "Daily",
+              "startDateTime": "2025-01-01T06:00:00"
+            }
+          }
+        ]
+      },
+
+      "perform_automation": {
+        "action": "Perform",
+        "objectType": "Automation",
+        "objects": [
+          {
+            "CustomerKey": "daily_processing",
+            "Action": "Start"
+          }
+        ]
+      }
+    },
+
+    "subscriber_management": {
+      "create_subscriber": {
+        "action": "Create",
+        "objectType": "Subscriber",
+        "objects": [
+          {
+            "EmailAddress": "new@example.com",
+            "SubscriberKey": "sub-123",
+            "Status": "Active",
+            "Attributes": [
+              { "Name": "FirstName", "Value": "Jane" },
+              { "Name": "LastName", "Value": "Doe" }
+            ]
+          }
+        ]
+      },
+
+      "update_status": {
+        "action": "Update",
+        "objectType": "Subscriber",
+        "objects": [
+          {
+            "SubscriberKey": "sub-123",
+            "Status": "Unsubscribed"
+          }
+        ]
+      },
+
+      "retrieve_subscribers": {
+        "action": "Retrieve",
+        "objectType": "Subscriber",
+        "properties": ["EmailAddress", "SubscriberKey", "Status"],
+        "filter": {
+          "property": "Status",
+          "operator": "equals",
+          "value": "Active"
+        }
+      }
+    },
+
+    "content_builder": {
+      "content_blocks": {
+        "create": "POST /asset/v1/content/assets",
+        "types": [
+          "htmlblock",
+          "textblock",
+          "imageblock",
+          "buttonblock",
+          "freeformblock"
+        ]
+      },
+
+      "folders": {
+        "create_folder": {
+          "action": "Create",
+          "objectType": "DataFolder",
+          "objects": [
+            {
+              "name": "Email Templates",
+              "customerKey": "email_templates",
+              "contentType": "email",
+              "parentFolder": { "id": 0 }
+            }
+          ]
+        },
+        "content_types": [
+          "email",
+          "dataextension",
+          "image",
+          "document",
+          "portfolio"
+        ]
+      }
+    },
+
+    "tracking_and_analytics": {
+      "tracking_events": {
+        "retrieve_opens": {
+          "action": "Retrieve",
+          "objectType": "OpenEvent",
+          "properties": ["SubscriberKey", "EventDate", "EmailID"],
+          "filter": {
+            "property": "EventDate",
+            "operator": "greaterThan",
+            "value": "2025-01-01T00:00:00"
+          }
+        },
+        
+        "event_types": [
+          "OpenEvent",
+          "ClickEvent",
+          "BounceEvent",
+          "UnsubEvent",
+          "SentEvent",
+          "NotSentEvent"
+        ]
+      },
+
+      "engagement_metrics": {
+        "endpoints": {
+          "email_performance": "GET /analytics/v1/reports/email/{emailId}",
+          "journey_stats": "GET /interaction/v1/interactions/{id}/stats"
+        }
+      }
+    },
+
+    "troubleshooting": {
+      "common_issues": {
+        "email_not_rendering": {
+          "symptom": "Email body empty in MCE",
+          "cause": "Using mce_v1_build_email helper",
+          "solution": "Use mce_v1_rest_request with POST to /asset/v1/content/assets"
+        },
+        "journey_filters_not_working": {
+          "symptom": "Filter fields not available",
+          "cause": "Data Extension not linked to Contact Model",
+          "solution": "Link DE in Contact Builder or Data Designer"
+        },
+        "asset_type_error": {
+          "symptom": "Error 118077",
+          "cause": "Missing assetType.name",
+          "solution": "Include both id and name in assetType object"
+        },
+        "holdback_unavailable": {
+          "symptom": "Can't set holdback percentage",
+          "cause": "Trying to use holdback in recurring journey",
+          "solution": "Holdback only works with 'run once' journeys"
+        }
+      },
+
+      "error_codes": {
+        "10005": "Valid categoryId required",
+        "10006": "Validation error",
+        "118045": "Invalid HTML content",
+        "118052": "Name already exists",
+        "118077": "Invalid AssetType - include both id and name",
+        "118081": "Invalid Category ID",
+        "310007": "Invalid sendableSubscriberField"
+      }
+    },
+
+    "best_practices": {
+      "email_creation": [
+        "Always use REST API via mce_v1_rest_request",
+        "Include complete HTML with DOCTYPE",
+        "Use inline CSS for email compatibility",
+        "Keep container width at 600px max",
+        "Include both assetType.id and assetType.name"
+      ],
+      
+      "journey_builder": [
+        "Link Data Extensions to Contact Model before using filters",
+        "Use useHighWatermark: true for recurring journeys",
+        "Set holdBackPercentage: 0 for recurring journeys",
+        "Test all paths before publishing"
+      ],
+      
+      "data_management": [
+        "Define primary keys for all Data Extensions",
+        "Use appropriate field types",
+        "Batch operations in groups of 2500",
+        "Use filters to limit result sets"
+      ],
+      
+      "performance": [
+        "Minimize API calls with batch operations",
+        "Cache OAuth tokens (expires_in field)",
+        "Use pagination for large result sets",
+        "Implement retry logic with exponential backoff"
+      ]
+    },
+
+    "quick_reference": {
+      "for_llms": {
+        "email_creation": "Use mce_v1_rest_request POST /asset/v1/content/assets with assetType:{id:208,name:'htmlemail'}",
+        "journey_filters": "Data Extension MUST be linked to Contact Model",
+        "never_use": "mce_v1_build_email has rendering issues",
+        "soap_vs_rest": "Use REST for assets, SOAP for subscribers/sends"
+      },
+      
+      "tool_selection": {
+        "mce_v1_rest_request": "Email assets, content blocks, folders",
+        "mce_v1_soap_request": "Subscribers, sends, data extensions, automations",
+        "mce_v1_documentation": "Get this complete reference"
+      },
+      
+      "authentication": {
+        "oauth_endpoint": "https://{{subdomain}}.auth.marketingcloudapis.com/v2/token",
+        "grant_type": "client_credentials",
+        "scope": "required permissions",
+        "token_usage": "Bearer token in Authorization header"
+      }
+    }
+  }
+}
