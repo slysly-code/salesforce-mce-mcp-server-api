@@ -1,0 +1,324 @@
+{
+  "email_creation_examples": {
+    "overview": {
+      "description": "Complete examples and patterns for creating emails in Marketing Cloud Engagement via MCP Server",
+      "last_updated": "2024-09-19",
+      "critical_note": "Always use REST API directly via mce_v1_rest_request. The mce_v1_build_email tool may have rendering issues.",
+      "tested_with": "MCE REST API v1"
+    },
+    "working_methods": {
+      "rest_api_method": {
+        "description": "RECOMMENDED: Direct REST API call for email creation",
+        "tool": "mce_v1_rest_request",
+        "success_rate": "100%",
+        "example": {
+          "method": "POST",
+          "path": "/asset/v1/content/assets",
+          "body": {
+            "name": "Email Campaign Name",
+            "assetType": {
+              "id": 208,
+              "name": "htmlemail"
+            },
+            "views": {
+              "html": {
+                "content": "<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Email</title></head><body><div style=\"max-width:600px;margin:0 auto;\">Content here</div></body></html>"
+              },
+              "subjectline": {
+                "content": "Email Subject Line"
+              },
+              "preheader": {
+                "content": "Preview text for inbox"
+              }
+            }
+          }
+        }
+      },
+      "build_email_method": {
+        "description": "NOT RECOMMENDED: Build email helper has content rendering issues",
+        "tool": "mce_v1_build_email",
+        "success_rate": "10%",
+        "known_issues": [
+          "Content may not render in email body",
+          "Sections array structure may not process correctly",
+          "Limited control over HTML structure"
+        ],
+        "avoid": true
+      }
+    },
+    "asset_types": {
+      "html_email": {
+        "id": 208,
+        "name": "htmlemail",
+        "description": "Standard HTML email",
+        "required": true
+      },
+      "template": {
+        "id": 207,
+        "name": "template",
+        "description": "Reusable email template"
+      },
+      "text_only": {
+        "id": 209,
+        "name": "textonlyemail",
+        "description": "Plain text email"
+      }
+    },
+    "required_fields": {
+      "name": {
+        "type": "string",
+        "required": true,
+        "description": "Email name for internal reference"
+      },
+      "assetType": {
+        "type": "object",
+        "required": true,
+        "note": "MUST include both id AND name properties",
+        "properties": {
+          "id": {
+            "type": "number",
+            "value": 208,
+            "required": true
+          },
+          "name": {
+            "type": "string",
+            "value": "htmlemail",
+            "required": true
+          }
+        }
+      },
+      "views": {
+        "type": "object",
+        "required": true,
+        "properties": {
+          "html": {
+            "required": true,
+            "content": "Complete HTML document with DOCTYPE"
+          },
+          "subjectline": {
+            "required": false,
+            "recommended": true,
+            "content": "Email subject"
+          },
+          "preheader": {
+            "required": false,
+            "recommended": true,
+            "content": "Preview text"
+          },
+          "text": {
+            "required": false,
+            "content": "Plain text version"
+          }
+        }
+      }
+    },
+    "html_structure_requirements": {
+      "doctype": {
+        "required": true,
+        "value": "<!DOCTYPE html>"
+      },
+      "meta_tags": [
+        "<meta charset=\"UTF-8\">",
+        "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"
+      ],
+      "container": {
+        "max_width": "600px",
+        "center_align": "margin: 0 auto",
+        "note": "Email clients have varying support for widths over 600px"
+      },
+      "css_approach": {
+        "inline": "Primary method - use style attributes",
+        "internal": "Secondary - <style> in <head> for media queries",
+        "external": "Not supported in most email clients"
+      }
+    },
+    "complete_examples": {
+      "minimal_working_email": {
+        "description": "Simplest working email structure",
+        "request": {
+          "method": "POST",
+          "path": "/asset/v1/content/assets",
+          "body": {
+            "name": "Test Email",
+            "assetType": {
+              "id": 208,
+              "name": "htmlemail"
+            },
+            "views": {
+              "html": {
+                "content": "<!DOCTYPE html><html><head><meta charset=\"UTF-8\"></head><body><p>Hello World</p></body></html>"
+              }
+            }
+          }
+        }
+      },
+      "marketing_email_with_hero": {
+        "description": "Marketing email with hero image and CTA",
+        "request": {
+          "method": "POST",
+          "path": "/asset/v1/content/assets",
+          "body": {
+            "name": "Marketing Campaign",
+            "assetType": {
+              "id": 208,
+              "name": "htmlemail"
+            },
+            "views": {
+              "html": {
+                "content": "<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><style>body{margin:0;padding:0;font-family:Arial,sans-serif;}.container{max-width:600px;margin:0 auto;}.header{background:#0176d3;padding:30px;text-align:center;}.hero{width:100%;height:auto;}.content{padding:30px;}.button{display:inline-block;padding:15px 30px;background:#0176d3;color:white;text-decoration:none;border-radius:5px;}</style></head><body><div class=\"container\"><div class=\"header\"><img src=\"https://www.salesforce.com/content/dam/sfdc-docs/www/logos/logo-salesforce-white.svg\" alt=\"Logo\" width=\"150\" style=\"filter:brightness(0) invert(1);\"></div><img src=\"https://via.placeholder.com/600x300\" alt=\"Hero\" class=\"hero\"><div class=\"content\"><h1>Welcome to Our Service</h1><p>Get started with our amazing features today.</p><a href=\"https://example.com\" class=\"button\">Get Started</a></div></div></body></html>"
+              },
+              "subjectline": {
+                "content": "Welcome to Our Service"
+              },
+              "preheader": {
+                "content": "Get started with amazing features"
+              }
+            }
+          }
+        }
+      },
+      "two_column_responsive": {
+        "description": "Two-column layout with mobile responsiveness",
+        "request": {
+          "method": "POST",
+          "path": "/asset/v1/content/assets",
+          "body": {
+            "name": "Two Column Newsletter",
+            "assetType": {
+              "id": 208,
+              "name": "htmlemail"
+            },
+            "views": {
+              "html": {
+                "content": "<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><style>.two-column{display:table;width:100%;}.column{display:table-cell;width:50%;padding:20px;}@media only screen and (max-width:600px){.two-column{display:block;}.column{display:block;width:100%;}}</style></head><body><div style=\"max-width:600px;margin:0 auto;\"><div class=\"two-column\"><div class=\"column\"><h2>Feature 1</h2><p>Description of feature 1</p></div><div class=\"column\"><h2>Feature 2</h2><p>Description of feature 2</p></div></div></div></body></html>"
+              }
+            }
+          }
+        }
+      }
+    },
+    "common_errors": {
+      "missing_asset_type_name": {
+        "error": {
+          "message": "You must provide a valid AssetType Id/Name pair for the Asset.",
+          "errorcode": 118077
+        },
+        "cause": "Only providing assetType.id without assetType.name",
+        "solution": "Always include both id: 208 and name: 'htmlemail'"
+      },
+      "invalid_category": {
+        "error": {
+          "message": "Unable to find a Category whose Id is '1234'",
+          "errorcode": 118081
+        },
+        "cause": "Using non-existent category ID",
+        "solution": "Omit category field or use valid category ID from your account"
+      },
+      "empty_body_issue": {
+        "error": "Email body appears empty in MCE",
+        "cause": "Using mce_v1_build_email tool",
+        "solution": "Switch to mce_v1_rest_request with POST to /asset/v1/content/assets"
+      }
+    },
+    "css_patterns": {
+      "responsive_container": {
+        "css": ".container { max-width: 600px; margin: 0 auto; }",
+        "inline": "style=\"max-width:600px;margin:0 auto;\""
+      },
+      "button_styles": {
+        "css": ".button { display: inline-block; padding: 15px 30px; background: #0176d3; color: white; text-decoration: none; border-radius: 5px; }",
+        "inline": "style=\"display:inline-block;padding:15px 30px;background:#0176d3;color:white;text-decoration:none;border-radius:5px;\""
+      },
+      "two_column_desktop": {
+        "css": ".two-column { display: table; width: 100%; } .column { display: table-cell; width: 50%; padding: 20px; }"
+      },
+      "two_column_mobile": {
+        "css": "@media only screen and (max-width: 600px) { .two-column { display: block; } .column { display: block; width: 100%; } }"
+      }
+    },
+    "image_handling": {
+      "requirements": [
+        "Use absolute URLs (https://)",
+        "Include alt text for accessibility",
+        "Optimize images before linking (max 200KB recommended)",
+        "Use width attribute for Outlook compatibility"
+      ],
+      "salesforce_logos": {
+        "standard": "https://www.salesforce.com/content/dam/sfdc-docs/www/logos/logo-salesforce.svg",
+        "white": "https://www.salesforce.com/content/dam/sfdc-docs/www/logos/logo-salesforce-white.svg",
+        "white_css_trick": "style=\"filter: brightness(0) invert(1);\""
+      }
+    },
+    "api_endpoints": {
+      "create": {
+        "method": "POST",
+        "path": "/asset/v1/content/assets"
+      },
+      "list": {
+        "method": "GET",
+        "path": "/asset/v1/content/assets",
+        "query": {
+          "$filter": "assetType.id eq 208",
+          "page": 1,
+          "pageSize": 50
+        }
+      },
+      "get": {
+        "method": "GET",
+        "path": "/asset/v1/content/assets/{id}"
+      },
+      "update": {
+        "method": "PATCH",
+        "path": "/asset/v1/content/assets/{id}"
+      },
+      "delete": {
+        "method": "DELETE",
+        "path": "/asset/v1/content/assets/{id}"
+      }
+    },
+    "success_response_structure": {
+      "id": "number - Email asset ID",
+      "customerKey": "string - Unique identifier",
+      "name": "string - Email name",
+      "status": {
+        "id": 1,
+        "name": "Draft"
+      },
+      "views": {
+        "html": {
+          "content": "HTML content"
+        },
+        "subjectline": {
+          "content": "Subject"
+        }
+      },
+      "createdDate": "ISO datetime",
+      "modifiedDate": "ISO datetime"
+    },
+    "best_practices": {
+      "always": [
+        "Use mce_v1_rest_request instead of mce_v1_build_email",
+        "Include both assetType.id and assetType.name",
+        "Start with <!DOCTYPE html>",
+        "Include viewport meta tag for mobile",
+        "Use max-width: 600px for container",
+        "Test with preview before sending"
+      ],
+      "never": [
+        "Use mce_v1_build_email for production emails",
+        "Omit assetType.name field",
+        "Use relative image URLs",
+        "Exceed 100KB HTML size",
+        "Use external CSS files",
+        "Forget alt text on images"
+      ]
+    },
+    "quick_reference": {
+      "llm_instruction": "When creating an email in MCE, ALWAYS use mce_v1_rest_request with method: POST, path: /asset/v1/content/assets, and include assetType: {id: 208, name: 'htmlemail'} with complete HTML in views.html.content",
+      "minimum_fields": ["name", "assetType.id", "assetType.name", "views.html.content"],
+      "tool_choice": "mce_v1_rest_request",
+      "method": "POST",
+      "path": "/asset/v1/content/assets"
+    }
+  }
+}
