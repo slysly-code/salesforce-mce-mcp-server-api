@@ -1,0 +1,280 @@
+{
+  "___INSTRUCTIONS_FOR_LLM___": "Send this exact JSON to POST /asset/v1/content/assets to create fully editable email in MCE",
+  "___CRITICAL___": "assetType.id MUST be 207, NOT 208",
+  "data": {
+    "email": {
+      "options": {
+        "characterEncoding": "utf-8"
+      }
+    }
+  },
+  "name": "Fully Editable Email Template",
+  "assetType": {
+    "id": 207,
+    "name": "templatebasedemail"
+  },
+  "category": {
+    "id": 2073800
+  },
+  "meta": {
+    "globalStyles": {
+      "isLocked": false,
+      "template": {
+        "background-color": "#FFFFFF",
+        "border-width": "0px",
+        "border-style": "solid"
+      },
+      "body": {
+        "background-color": "#FFFFFF",
+        "font-family": "Arial,helvetica,sans-serif",
+        "font-size": "16px",
+        "color": "#000000",
+        "line-height": 1,
+        "padding": "0px"
+      },
+      "h1": {
+        "font-family": "Arial,helvetica,sans-serif",
+        "font-size": "28px",
+        "color": "#181818",
+        "line-height": 1,
+        "font-weight": "bold"
+      },
+      "h2": {
+        "font-family": "Arial,helvetica,sans-serif",
+        "font-size": "22px",
+        "color": "#181818",
+        "line-height": 1,
+        "font-weight": "bold"
+      },
+      "links": {
+        "font-weight": "normal",
+        "color": "#0176d3",
+        "text-decoration": "none"
+      },
+      "buttons": {
+        "font-family": "Arial,helvetica,sans-serif",
+        "font-size": "16px",
+        "color": "#FFFFFF",
+        "background-color": "#0176d3",
+        "border-radius": "4px",
+        "padding": "10px"
+      },
+      "mobile": {
+        "body": {
+          "padding": "0px",
+          "font-size": "16px",
+          "line-height": 1.5
+        },
+        "h1": {
+          "font-size": "22px",
+          "line-height": 1
+        },
+        "buttons": {
+          "font-family": "Arial,helvetica,sans-serif",
+          "font-size": "16px",
+          "color": "#FFFFFF",
+          "padding": "10px"
+        }
+      }
+    }
+  },
+  "views": {
+    "subjectline": {
+      "content": "Welcome %%firstname%%!",
+      "data": {
+        "email": {
+          "options": {
+            "generateFrom": ""
+          }
+        }
+      }
+    },
+    "preheader": {
+      "content": "Start your journey with us",
+      "data": {
+        "email": {
+          "options": {
+            "generateFrom": ""
+          }
+        }
+      }
+    },
+    "html": {
+      "content": "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n<html>\n<head>\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n<style type=\"text/css\">\nReadMsgBody{ width: 100%;}\n.ExternalClass {width: 100%;}\nbody {-webkit-text-size-adjust:100%; -ms-text-size-adjust:100%;margin:0 !important;}\np { margin: 1em 0;}\ntable td { border-collapse: collapse;}\n@media only screen and (max-width: 480px) {\n.container {width: 100% !important;}\n.responsive-td {width:100% !important; display:block !important; padding:0 !important;}\nbody { padding: 0px !important; font-size: 16px !important; line-height: 150% !important;}\nh1 { font-size: 22px !important; line-height: normal !important;}\n}\n</style>\n</head>\n<body bgcolor=\"#ffffff\" text=\"#000000\" style=\"background-color: #ffffff; color: #000000; padding: 0px; -webkit-text-size-adjust:none; font-size: 16px; font-family:arial,helvetica,sans-serif;\">\n<div style=\"font-size:0; line-height:0;\"><custom name=\"opencounter\" type=\"tracking\"><custom name=\"usermatch\" type=\"tracking\" /></div>\n<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" align=\"center\">\n<tr><td align=\"center\" valign=\"top\"><custom type=\"header\"/></td></tr>\n<tr><td align=\"center\">\n<table cellspacing=\"0\" cellpadding=\"0\" border=\"0\" width=\"600\" class=\"container\" align=\"center\">\n<tr><td>\n<table class=\"tb_properties\" style=\"background-color:#FFFFFF;\" cellspacing=\"0\" cellpadding=\"0\" bgcolor=\"#ffffff\" width=\"100%\">\n<tr><td align=\"center\" valign=\"top\">\n<table align=\"left\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tr><td class=\"content_padding\" style=\"\">\n<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tr><td align=\"center\" valign=\"top\">\n<table align=\"left\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody>\n<tr><td align=\"left\" valign=\"top\">\n<table cellspacing=\"0\" cellpadding=\"0\" style=\"width:100%\">\n<tbody>\n<tr><td class=\"responsive-td\" valign=\"top\" style=\"width: 100%;\">\n<div data-type=\"slot\" data-key=\"header\"></div>\n</td></tr>\n</tbody>\n</table>\n</td></tr>\n</tbody>\n</table>\n</td></tr>\n<tr><td align=\"center\" valign=\"top\">\n<table align=\"left\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n<tbody>\n<tr><td align=\"left\" valign=\"top\">\n<table cellspacing=\"0\" cellpadding=\"0\" style=\"width:100%\">\n<tbody>\n<tr><td class=\"responsive-td\" valign=\"top\" style=\"width: 100%;\">\n<div data-type=\"slot\" data-key=\"body\"></div>\n</td></tr>\n</tbody>\n</table>\n</td></tr>\n</tbody>\n</table>\n</td></tr>\n</table>\n</td></tr>\n</table>\n</td></tr>\n</table>\n</td></tr>\n</table>\n</td></tr>\n</table>\n</td></tr>\n<tr><td valign=\"top\"><custom type=\"footer\" /></td></tr>\n</table>\n</body>\n</html>",
+      "slots": {
+        "header": {
+          "content": "<div data-type=\"block\" data-key=\"header-image-block\"></div>",
+          "design": "<p style=\"font-family:Arial;color:#ccc;font-size:12px;text-align:center;vertical-align:middle;font-weight:bold;height:150px;display:flex;flex-direction:column;justify-content:center;padding:10px;margin:0;border: #cccccc dashed 1px;\">Drop blocks or content here</p>",
+          "blocks": {
+            "header-image-block": {
+              "assetType": {
+                "id": 199,
+                "name": "imageblock"
+              },
+              "content": "<table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" role=\"presentation\" style=\"background-color: #0176d3; min-width: 100%;\" class=\"stylingblock-content-wrapper\"><tr><td style=\"padding: 20px;\" class=\"stylingblock-content-wrapper camarker-inner\"><table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" role=\"presentation\"><tr><td align=\"center\"><img src=\"https://via.placeholder.com/200x80/0176d3/ffffff?text=LOGO\" alt=\"Logo\" height=\"80\" width=\"200\" style=\"display: block; padding: 0px; text-align: center; height: 80px; width: 200px; border: 0px;\"></td></tr></table></td></tr></table>",
+              "design": "<table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" role=\"presentation\" style=\"background-color: #0176d3; min-width: 100%;\" class=\"stylingblock-content-wrapper\"><tr><td style=\"padding: 20px;\" class=\"stylingblock-content-wrapper camarker-inner\"><div class=\"default-design\"><div style=\"width:100%;height:120px;background-color:#0176d3;display:flex;align-items:center;justify-content:center;color:white;font-size:18px;\">Logo Placeholder</div></div></td></tr></table>",
+              "meta": {
+                "wrapperStyles": {
+                  "mobile": {
+                    "visible": true
+                  },
+                  "styling": {
+                    "background-color": "#0176d3",
+                    "padding": "20px"
+                  }
+                }
+              },
+              "data": {
+                "email": {
+                  "options": {
+                    "generateFrom": ""
+                  }
+                }
+              },
+              "modelVersion": 2
+            }
+          },
+          "slots": {},
+          "data": {
+            "email": {
+              "options": {
+                "generateFrom": ""
+              }
+            }
+          },
+          "modelVersion": 2
+        },
+        "body": {
+          "content": "<div data-type=\"block\" data-key=\"body-text-block\"></div><div data-type=\"block\" data-key=\"body-button-block\"></div>",
+          "design": "<p style=\"font-family:Arial;color:#ccc;font-size:12px;text-align:center;vertical-align:middle;font-weight:bold;height:150px;display:flex;flex-direction:column;justify-content:center;padding:10px;margin:0;border: #cccccc dashed 1px;\">Drop blocks or content here</p>",
+          "blocks": {
+            "body-text-block": {
+              "assetType": {
+                "id": 196,
+                "name": "textblock"
+              },
+              "content": "<table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" role=\"presentation\" style=\"min-width: 100%;\" class=\"stylingblock-content-wrapper\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 20px;\"><h1 style=\"color: #333333; font-size: 24px; margin: 0 0 10px 0;\">Welcome to Our Newsletter</h1><p style=\"color: #666666; font-size: 16px; line-height: 24px;\">Hi %%firstname%%,</p><p style=\"color: #666666; font-size: 16px; line-height: 24px;\">This is a fully editable email template created via API. You can modify this text, add images, and customize the layout using Marketing Cloud's Content Builder interface.</p></td></tr></table>",
+              "design": "<table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" role=\"presentation\" style=\"min-width: 100%;\" class=\"stylingblock-content-wrapper\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\" style=\"padding: 20px;\"><div class=\"default-design\" style=\"min-height:100px;\"><p class=\"textblock\" style=\"margin:0; padding:0;\">Welcome message and main content will appear here. This block is fully editable.</p></div></td></tr></table>",
+              "meta": {
+                "wrapperStyles": {
+                  "mobile": {
+                    "visible": true
+                  },
+                  "styling": {
+                    "padding": "20px"
+                  }
+                }
+              },
+              "data": {
+                "email": {
+                  "options": {
+                    "generateFrom": ""
+                  }
+                }
+              },
+              "modelVersion": 2
+            },
+            "body-button-block": {
+              "assetType": {
+                "id": 195,
+                "name": "buttonblock"
+              },
+              "content": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\"><tr><td align=\"center\" style=\"padding: 20px;\"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\"><tr><td style=\"background-color: #0176d3; border-radius: 4px;\"><a href=\"https://example.com\" target=\"_blank\" style=\"display: inline-block; padding: 12px 30px; color: #ffffff; text-decoration: none; font-size: 16px; font-weight: bold;\">Get Started</a></td></tr></table></td></tr></table>",
+              "design": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\"><tr><td align=\"center\" style=\"padding: 20px;\"><table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\"><tr><td style=\"background-color: #0176d3; border-radius: 4px; padding: 12px 30px;\"><span style=\"color: #ffffff; font-size: 16px; font-weight: bold;\">Button</span></td></tr></table></td></tr></table>",
+              "meta": {
+                "wrapperStyles": {
+                  "mobile": {
+                    "visible": true
+                  },
+                  "styling": {
+                    "padding": "20px"
+                  }
+                }
+              },
+              "data": {
+                "email": {
+                  "options": {
+                    "generateFrom": ""
+                  }
+                }
+              },
+              "modelVersion": 2
+            }
+          },
+          "slots": {},
+          "data": {
+            "email": {
+              "options": {
+                "generateFrom": ""
+              }
+            }
+          },
+          "modelVersion": 2
+        }
+      },
+      "template": {
+        "id": 0,
+        "assetType": {
+          "id": 214,
+          "name": "defaulttemplate"
+        },
+        "name": "CONTENTTEMPLATES_C",
+        "content": "",
+        "meta": {
+          "contentHash": -2083339668
+        },
+        "slots": {
+          "header": {
+            "locked": false,
+            "data": {
+              "email": {
+                "options": {
+                  "generateFrom": ""
+                }
+              }
+            },
+            "modelVersion": 2
+          },
+          "body": {
+            "locked": false,
+            "data": {
+              "email": {
+                "options": {
+                  "generateFrom": ""
+                }
+              }
+            },
+            "modelVersion": 2
+          }
+        },
+        "data": {
+          "email": {
+            "options": {
+              "generateFrom": ""
+            }
+          }
+        },
+        "modelVersion": 2
+      },
+      "data": {
+        "email": {
+          "options": {
+            "generateFrom": ""
+          }
+        }
+      },
+      "modelVersion": 2
+    },
+    "text": {
+      "data": {
+        "email": {
+          "options": {
+            "generateFrom": "html"
+          }
+        }
+      },
+      "generateFrom": "html",
+      "modelVersion": 2
+    }
+  }
+}
