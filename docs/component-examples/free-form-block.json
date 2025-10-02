@@ -1,0 +1,10 @@
+{
+  "assetType": { "id": 198, "name": "freeformblock" },
+  "content": "<table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" role=\"presentation\"><tr><td class=\"stylingblock-content-wrapper camarker-inner\">Lore ipusm <a alias=\"dolore \" conversion=\"true\" data-linkto=\"http://\" href=\"http://#\" style=\"color:#0176d3;text-decoration:none;\" title=\"dolore \">dolore</a>&nbsp;es&nbsp;</td></tr></table>",
+  "design": "<div style=\"padding:20px; border:1px dashed #cccccc;\">Free form content with text and a <a href='#'>link</a>.</div>",
+  "meta": {
+    "wrapperStyles": {
+      "styling": { "padding": "10px" }
+    }
+  }
+}

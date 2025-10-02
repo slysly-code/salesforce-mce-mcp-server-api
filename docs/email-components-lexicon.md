@@ -37,3 +37,22 @@ This guide maps common user requests to their corresponding technical email comp
 * **Description:** A layout that displays two items next to each other, often used for product showcases. This requires creating a slot with a two-column structure.
 * **Technical Implementation:** A layout structure containing two slots.
 * **Example File:** `component-examples/two-column-layout.json`
+
+---
+
+### **Component: Free Form Block**
+
+* **User Phrases:** "html block," "custom code," "mixed content"
+* **Description:** A flexible block that can contain any combination of text, links, images, and custom HTML.
+* **Technical Implementation:** A `freeformblock`.
+* **Example File:** `component-examples/free-form-block.json`
+
+---
+
+### **Component: Dynamic Content**
+
+* **User Phrases:** "personalized content," "dynamic block," "conditional section"
+* **Description:** A block that displays different content to different subscribers based on their data (e.g., age, location, gender). This is implemented using AMPscript inside a Free Form block, which then calls other existing content blocks.
+* **Technical Implementation:** A `freeformblock` containing AMPscript.
+* **Example File:** `component-examples/dynamic-content-block.json`
+* **Note:** The `ContentBlockById` functions require that the referenced content blocks (e.g., ID "1641338") already exist in Content Builder.
