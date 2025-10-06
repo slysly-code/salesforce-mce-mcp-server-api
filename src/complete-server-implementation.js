@@ -719,9 +719,14 @@ Please call mce_v1_preflight_check first.`
   }
 }
 
+const PORT = process.env.PORT || 3000;
+
+// Health check route
+app.get('/', (req, res) => {
+  res.status(200).send('Server is healthy and running!');
+});
+
 // Start the server
-const server = new DocumentationEnforcedMCPServer();
-server.start().catch((error) => {
-  console.error('Fatal error:', error);
-  process.exit(1);
+app.listen(PORT, () => {
+  console.log(`Server is listening on port ${PORT}`);
 });

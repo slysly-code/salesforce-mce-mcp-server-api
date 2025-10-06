@@ -3,14 +3,9 @@
   "version": "1.0.0",
   "description": "HTTP API bridge between Salesforce Agentforce and Marketing Cloud Engagement",
   "type": "module",
-  "main": "src/server.js",
+  "main": "src/complete-server-implementation.js",
   "scripts": {
-    "start": "node src/server.js",
-    "dev": "nodemon src/server.js",
-    "test": "node --test tests/",
-    "deploy": "fly deploy",
-    "logs": "fly logs",
-    "status": "fly status"
+  "start": "node src/complete-server-implementation.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^0.6.0",
@@ -39,6 +34,6 @@
     "mcp",
     "integration"
   ],
-  "author": "Your Name",
+  "author": "Oliver Leister",
   "license": "MIT"
 }
