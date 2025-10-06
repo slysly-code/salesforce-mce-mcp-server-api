@@ -1,20 +1,19 @@
-# fly.toml app configuration file generated for salesforce-mce-api on 2025-09-18T11:28:55+02:00
-#
-# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
-#
+# fly.toml app configuration file
+# Updated for dual-mode server
 
 app = 'salesforce-mce-api'
 primary_region = 'iad'
 
-
+[build]
 
 [env]
   LOG_LEVEL = 'info'
   NODE_ENV = 'production'
   PORT = '8080'
+  MODE = 'http'  # IMPORTANT: Forces HTTP mode for Fly.io
   RATE_LIMIT_MAX_REQUESTS = '100'
   RATE_LIMIT_WINDOW_MS = '60000'
-  REQUIRE_AUTH = 'true'
+  REQUIRE_AUTH = 'false'  # Set to 'true' if you want auth
 
 [http_service]
   internal_port = 8080
@@ -66,4 +65,8 @@ primary_region = 'iad'
   path = '/metrics'
 
 [processes]
-app = "node src/complete-server-implementation.js"
+# Option 1: Use the HTTP-specific entry point (RECOMMENDED)
+app = "node src/http-server.js"
+
+# Option 2: Use the dual-mode file with MODE env var
+# app = "node src/complete-server-implementation.js"
