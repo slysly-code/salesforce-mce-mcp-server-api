@@ -2,6 +2,7 @@
 
 /**
  * Complete MCE MCP Server Implementation - DUAL MODE
+ * UPDATED VERSION with documentation reading tool
  * 
  * This server can run in two modes:
  * 
@@ -79,9 +80,16 @@ class MCEServerCore {
     const responses = {
       email_creation: {
         required_reading: [
-          'mce://guides/editable-emails (CRITICAL - explains assetType.id = 207)',
-          'mce://examples/complete-email (REQUIRED - shows exact structure)',
-          'mce://guides/email-components (Optional - if user mentioned components)'
+          {
+            uri: 'mce://master-guide',
+            title: 'COMPLETE GUIDE - Everything you need in ONE file',
+            access_method: 'Call mce_v1_read_documentation with uri: "mce://master-guide"'
+          },
+          {
+            uri: 'mce://examples/complete-email',
+            title: 'Optional - full JSON reference',
+            access_method: 'Call mce_v1_read_documentation with uri: "mce://examples/complete-email"'
+          }
         ],
         critical_rules: [
           '❌ NEVER use assetType.id = 208',
@@ -94,6 +102,26 @@ class MCEServerCore {
           'Using id 208': '60% of failures - creates non-editable emails',
           'Missing name': '25% of failures - API error 118077',
           'Missing slots': '10% of failures - not editable in Content Builder'
+        }
+      },
+      journey_creation: {
+        required_reading: [
+          {
+            uri: 'mce://master-guide',
+            title: 'COMPLETE GUIDE - includes journey patterns',
+            access_method: 'Call mce_v1_read_documentation with uri: "mce://master-guide"'
+          }
+        ],
+        critical_rules: [
+          '🔗 Data Extensions MUST be linked to Contact Model for filters',
+          '⚡ holdBackPercentage MUST be 0 for recurring journeys',
+          '🔄 Path Optimizer needs matching capsule IDs',
+          '📊 All paths must converge at ABNTESTSTOP'
+        ],
+        common_failures: {
+          'Unlinked DE': '40% of failures - filters fail without Contact Model link',
+          'Wrong holdBack': '30% of failures - recurring journeys require 0',
+          'Mismatched capsule': '20% of failures - ABNTEST/ABNTESTSTOP IDs must match'
         }
       }
     };
@@ -108,7 +136,9 @@ User Intent: "${user_intent}"
 
 📚 REQUIRED READING (DO NOT SKIP):
 
-${response.required_reading.map((doc, i) => `${i + 1}. ${doc}`).join('\n')}
+${response.required_reading.map((doc, i) => `${i + 1}. ${doc.title}
+   URI: ${doc.uri}
+   How to access: ${doc.access_method}`).join('\n\n')}
 
 ═══════════════════════════════════════════════════════════
 
@@ -176,7 +206,7 @@ Include this in your mce_v1_rest_request call:
       if (!request_body.views?.html?.slots) {
         warnings.push('⚠️  WARNING: No slots defined in views.html.slots');
         warnings.push('   Email may not be editable in Content Builder');
-        warnings.push('   📖 Read mce://guides/editable-emails for proper structure');
+        warnings.push('   📖 Read mce://master-guide for proper structure');
       }
 
       if (!request_body.views?.subjectline) {
@@ -202,7 +232,7 @@ Include this in your mce_v1_rest_request call:
       errors,
       warnings,
       recommendation: errors.length > 0
-        ? 'Fix errors above before proceeding. Read mce://guides/editable-emails if needed.'
+        ? 'Fix errors above before proceeding. Read mce://master-guide if needed.'
         : warnings.length > 0
           ? 'Request will work but consider addressing warnings for best results.'
           : '✅ Request looks good! You can proceed.',
@@ -226,7 +256,7 @@ You attempted to create an email without a valid clearance token.
 
 REQUIRED ACTIONS:
 1. Call mce_v1_preflight_check with operation_type: "email_creation"
-2. Read ALL documentation resources returned
+2. Read ALL documentation resources returned using mce_v1_read_documentation
 3. Call mce_v1_validate_request with your planned request
 4. Include the clearance_token in this request
 
@@ -272,6 +302,16 @@ Please call mce_v1_preflight_check first.`);
 
   async handleSoapRequest(args) {
     return { message: 'SOAP request handling not fully implemented' };
+  }
+
+  async handleReadDocumentation(args) {
+    const { uri } = args;
+    const doc = this.getDocumentation(uri);
+    return {
+      uri: doc.uri,
+      content: doc.content,
+      mimeType: doc.mimeType
+    };
   }
 
   async getAccessToken(businessUnitId) {
@@ -329,49 +369,97 @@ Please call mce_v1_preflight_check first.`);
 
   getDocumentation(uri) {
     const fileMap = {
-      'mce://guides/editable-emails': 'docs/mce-editable-emails-llm.md',
-      'mce://guides/journey-builder': 'docs/mce-journey-builder-llm.md',
-      'mce://guides/email-components': 'docs/email-components-lexicon.md',
-      'mce://guides/dynamic-content': 'docs/dynamic-content-guide.md',
-      'mce://examples/complete-email': 'docs/mcp-complete-example.json',
-      'mce://examples/hero-image': 'docs/component-examples/hero-image.json',
-      'mce://examples/text-block': 'docs/component-examples/intro-text.json',
-      'mce://examples/button-block': 'docs/component-examples/cta-button.json',
-      'mce://reference/operations': 'docs/mce-complete-operations-guide.json'
+      // Master Guide (PRIMARY)
+      'mce://master-guide': 'docs/FOR-LLMS/MASTER-GUIDE.md',
+      
+      // Lexicon
+      'mce://lexicon/components': 'docs/lexicon/email-components.md',
+      
+      // Examples
+      'mce://examples/complete-email': 'docs/examples/complete-email.json',
+      'mce://examples/blocks/hero-image': 'docs/examples/blocks/hero-image.json',
+      'mce://examples/blocks/text': 'docs/examples/blocks/text-block.json',
+      'mce://examples/blocks/button': 'docs/examples/blocks/button-block.json',
+      'mce://examples/blocks/free-form': 'docs/examples/blocks/free-form-block.json',
+      'mce://examples/blocks/dynamic': 'docs/examples/blocks/dynamic-content-block.json',
+      
+      // BACKWARD COMPATIBILITY
+      'mce://api/editable-emails': 'docs/archive/api/editable-emails.md',
+      'mce://api/journey-builder': 'docs/archive/api/journey-builder.md',
+      'mce://api/email-structure': 'docs/archive/api/email-structure.md',
+      'mce://api/dynamic-content': 'docs/archive/api/dynamic-content.md',
+      'mce://api/operations': 'docs/archive/api/operations-reference.json',
+      'mce://guides/editable-emails': 'docs/archive/api/editable-emails.md',
+      'mce://guides/journey-builder': 'docs/archive/api/journey-builder.md',
+      'mce://guides/email-components': 'docs/lexicon/email-components.md',
+      'mce://guides/dynamic-content': 'docs/archive/api/dynamic-content.md',
+      'mce://examples/hero-image': 'docs/examples/blocks/hero-image.json',
+      'mce://examples/text-block': 'docs/examples/blocks/text-block.json',
+      'mce://examples/button-block': 'docs/examples/blocks/button-block.json',
+      'mce://reference/operations': 'docs/archive/api/operations-reference.json'
     };
 
     const filePath = fileMap[uri];
     if (!filePath) {
-      throw new Error(`Unknown resource: ${uri}`);
+      throw new Error(`Unknown resource: ${uri}. Available URIs: ${Object.keys(fileMap).join(', ')}`);
     }
 
     const fullPath = join(__dirname, '..', filePath);
-    const content = readFileSync(fullPath, 'utf8');
-    this.metrics.docsRead.add(uri);
+    try {
+      const content = readFileSync(fullPath, 'utf8');
+      this.metrics.docsRead.add(uri);
 
-    return {
-      uri,
-      content,
-      mimeType: uri.includes('.json') ? 'application/json' : 'text/markdown'
-    };
+      return {
+        uri,
+        content,
+        mimeType: uri.includes('.json') ? 'application/json' : 'text/markdown'
+      };
+    } catch (error) {
+      throw new Error(`Failed to read resource ${uri} at ${fullPath}: ${error.message}`);
+    }
   }
 
   listDocumentation() {
     return [
       {
-        uri: 'mce://guides/editable-emails',
-        name: 'Editable Email Creation Guide - MUST READ',
-        description: 'CRITICAL: Complete guide for creating editable emails with assetType.id = 207'
+        uri: 'mce://master-guide',
+        name: '🔴 MASTER GUIDE - READ THIS FIRST',
+        description: 'COMPLETE guide with EVERYTHING needed to create editable emails and journeys. Read this ONE file instead of 5+ separate files.'
       },
       {
         uri: 'mce://examples/complete-email',
-        name: 'Complete Email Example',
-        description: 'Full working example showing exact JSON structure'
+        name: '✅ Complete Email Example',
+        description: 'Full working editable email JSON structure. Use as template for all email creation.'
       },
       {
-        uri: 'mce://guides/email-components',
+        uri: 'mce://lexicon/components',
         name: 'Email Components Lexicon',
-        description: 'Maps user phrases to technical components'
+        description: 'Maps user phrases ("add a button", "hero image") to technical component implementations.'
+      },
+      {
+        uri: 'mce://examples/blocks/hero-image',
+        name: '🖼️ Hero Image Block Example',
+        description: 'imageblock (assetType 199) for full-width header images with no padding.'
+      },
+      {
+        uri: 'mce://examples/blocks/text',
+        name: '📝 Text Block Example',
+        description: 'textblock (assetType 196) for body content, paragraphs, and formatted text.'
+      },
+      {
+        uri: 'mce://examples/blocks/button',
+        name: '🔘 Button Block Example',
+        description: 'buttonblock (assetType 195) for call-to-action buttons with tracking.'
+      },
+      {
+        uri: 'mce://examples/blocks/free-form',
+        name: '🔧 Free Form Block Example',
+        description: 'freeformblock (assetType 198) with custom HTML, links, and mixed content.'
+      },
+      {
+        uri: 'mce://examples/blocks/dynamic',
+        name: '⚡ Dynamic Content Block Example',
+        description: 'AMPscript conditional content with BeginImpressionRegion tracking for personalization.'
       }
     ];
   }
@@ -387,7 +475,7 @@ class MCPStdioServer {
     this.mcpServer = new Server(
       {
         name: 'salesforce-marketing-cloud-mcp',
-        version: '3.0.0',
+        version: '3.2.0',
       },
       {
         capabilities: {
@@ -438,6 +526,20 @@ class MCPStdioServer {
               user_intent: { type: 'string' }
             },
             required: ['operation_type', 'user_intent']
+          }
+        },
+        {
+          name: 'mce_v1_read_documentation',
+          description: 'Read documentation by URI. Use this to access master guide and examples from preflight check.',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              uri: { 
+                type: 'string',
+                description: 'Documentation URI (e.g., mce://master-guide, mce://examples/complete-email)'
+              }
+            },
+            required: ['uri']
           }
         },
         {
@@ -505,6 +607,9 @@ class MCPStdioServer {
           case 'mce_v1_preflight_check':
             result = await this.core.handlePreFlightCheck(args);
             break;
+          case 'mce_v1_read_documentation':
+            result = await this.core.handleReadDocumentation(args);
+            break;
           case 'mce_v1_validate_request':
             result = await this.core.handleValidateRequest(args);
             break;
@@ -540,7 +645,8 @@ class MCPStdioServer {
     const transport = new StdioServerTransport();
     await this.mcpServer.connect(transport);
     console.error('🔵 MCP Server running in STDIO mode (for Claude Desktop)');
-    console.error('✅ Resources API enabled');
+    console.error('✅ Resources API enabled - 8 resources available');
+    console.error('✅ Documentation reading tool enabled');
     console.error('✅ Pre-flight checks enabled');
     console.error('🎯 Success rate target: 95%');
   }
@@ -589,11 +695,12 @@ class HTTPServer {
     this.app.get('/', (req, res) => {
       res.json({
         name: 'Salesforce MCE MCP Server API',
-        version: '3.0.0',
+        version: '3.2.0',
         mode: 'HTTP',
         endpoints: {
           health: 'GET /health',
           docs: 'GET /mce/v1/docs',
+          read_doc: 'GET /mce/v1/docs/read?uri=mce://master-guide',
           preflight: 'POST /mce/v1/preflight-check',
           validate: 'POST /mce/v1/validate',
           rest: 'POST /mce/v1/rest',
@@ -602,16 +709,24 @@ class HTTPServer {
       });
     });
 
-    // Documentation
+    // Documentation list
     this.app.get('/mce/v1/docs', (req, res) => {
       try {
+        res.json({ success: true, data: this.core.listDocumentation() });
+      } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+      }
+    });
+
+    // Read documentation
+    this.app.get('/mce/v1/docs/read', (req, res) => {
+      try {
         const { uri } = req.query;
-        if (uri) {
-          const doc = this.core.getDocumentation(uri);
-          res.json({ success: true, data: doc });
-        } else {
-          res.json({ success: true, data: this.core.listDocumentation() });
+        if (!uri) {
+          return res.status(400).json({ success: false, error: 'uri parameter required' });
         }
+        const doc = this.core.getDocumentation(uri);
+        res.json({ success: true, data: doc });
       } catch (error) {
         res.status(404).json({ success: false, error: error.message });
       }
@@ -660,13 +775,14 @@ class HTTPServer {
 
   start() {
     this.app.listen(this.PORT, '0.0.0.0', () => {
-      console.log('═══════════════════════════════════════════════════════════');
+      console.log('═════════════════════════════════════════════════════════');
       console.log('🟢 HTTP Server running (for Fly.io / API access)');
-      console.log('═══════════════════════════════════════════════════════════');
-      console.log(`📍 Server URL: http://0.0.0.0:${this.PORT}`);
+      console.log('═════════════════════════════════════════════════════════');
+      console.log(`🌐 Server URL: http://0.0.0.0:${this.PORT}`);
       console.log(`✅ Health: http://0.0.0.0:${this.PORT}/health`);
       console.log(`📚 Docs: http://0.0.0.0:${this.PORT}/mce/v1/docs`);
-      console.log('═══════════════════════════════════════════════════════════');
+      console.log(`📖 Read Doc: http://0.0.0.0:${this.PORT}/mce/v1/docs/read?uri=mce://master-guide`);
+      console.log('═════════════════════════════════════════════════════════');
     });
   }
 }

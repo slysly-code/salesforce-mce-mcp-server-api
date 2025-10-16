@@ -1,11 +1,13 @@
 {
   "name": "salesforce-mce-mcp-server-api",
-  "version": "1.0.0",
+  "version": "3.2.0",
   "description": "HTTP API bridge between Salesforce Agentforce and Marketing Cloud Engagement",
   "type": "module",
   "main": "src/complete-server-implementation.js",
   "scripts": {
-  "start": "node src/complete-server-implementation.js"
+    "start": "node src/complete-server-implementation.js",
+    "start:mcp": "node src/mcp-server.js",
+    "start:http": "node src/http-server.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^0.6.0",

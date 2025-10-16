@@ -1,7 +1,0 @@
-{
-  "assetType": { "id": 195, "name": "buttonblock" },
-  "content": "<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\"><tr><td align=\"center\" style=\"padding: 20px;\"><table cellpadding=\"0\" cellspacing=\"0\"><tr><td style=\"background-color: #0176d3; border-radius: 4px;\"><a href=\"[URL]\" style=\"display: inline-block; padding: 12px 30px; color: #ffffff; text-decoration: none; font-size: 16px; font-weight: bold;\">[BUTTON_TEXT]</a></td></tr></table></td></tr></table>",
-  "meta": {
-    "wrapperStyles": { "styling": { "padding": "20px" } }
-  }
-}
